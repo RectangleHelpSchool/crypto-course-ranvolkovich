@@ -1,0 +1,8 @@
+Question: Explain in your own words what is an approval, and what are the differences between a transfer
+          to a transferFrom function (include the answer in a text file)
+
+Answer: approval is function that get 2 params address and amount and it allow the address
+        input to trasfer token below the amount of the amount
+
+        trasform is function that get address and amount of token and it pass the amount of the token to the address
+        transformFrom is function that get address from, address to and amount and it pass the amount form address to address in token
