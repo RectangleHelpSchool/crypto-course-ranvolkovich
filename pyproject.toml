@@ -21,6 +21,26 @@ dev = [
     "pytest-mock>=3.14.0",
 ]
 
+g[tool.ruff]
+# directories or packages to lint
+src = ["src"]
+
+[tool.mypy]
+# directories to type check
+files = ["src"]
+
+# Python version target
+python_version = "3.11"
+
+# strict mode
+strict = true
+
+# optional: ignore missing imports for third-party packages
+ignore_missing_imports = true
+
+# optional: disallow untyped function definitions
+disallow_untyped_defs = true
+
 [project.scripts]
 approval-fetcher = "approvalfetcher.main:main"
 

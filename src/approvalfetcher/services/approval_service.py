@@ -1,10 +1,12 @@
 import asyncio
+import datetime
 import logging
-from datetime import datetime
 
 from ..clients.web3_client import Web3Client
 from approvalfetcher.model.approval import ApprovalEvent, ApprovalEventCollection
 from ..utils.config import get_settings
+from ..utils.formatters import normalize_approval_amount
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +48,7 @@ class ApprovalService:
             total_events=len(latest_approvals),
             scanned_blocks=latest_block + 1,
             events=latest_approvals,
-            fetched_at=datetime.utcnow()
+            fetched_at=datetime.now(timezone.utc)
         )
 
     async def _parse_log_to_event(self, log: dict, owner_address: str) -> ApprovalEvent:
@@ -56,13 +58,15 @@ class ApprovalService:
         spender = "0x" + spender_topic[-40:]
 
         data = log['data'] if isinstance(log['data'], str) else log['data'].hex()
-
-        token_address = log['address'] if isinstance(log['address'], str) else log['address'].hex()
+        token_address = log['address']
 
         token_symbol, token_name = await asyncio.gather(
             self.client.get_token_symbol(token_address),
             self.client.get_token_name(token_address)
         )
+
+        # Normalize approval amount (convert huge numbers to INFINITY)
+        value = normalize_approval_amount(data)
 
         return ApprovalEvent(
             token_address=token_address,
@@ -70,16 +74,16 @@ class ApprovalService:
             token_symbol=token_symbol,
             owner=owner_address.lower(),
             spender=spender.lower(),
-            value=data
+            value=value
         )
 
     @staticmethod
     def _filter_latest_approvals(events_with_block: list[tuple[ApprovalEvent, int]]) -> list[ApprovalEvent]:
-        latest_by_pair = {}
+        latest_by_token = {}
 
         for event, block_number in events_with_block:
-            key = (event.token_address.lower(), event.spender.lower())
-            if key not in latest_by_pair or block_number > latest_by_pair[key][1]:
-                latest_by_pair[key] = (event, block_number)
+            key = event.token_address.lower()
+            if key not in latest_by_token or block_number > latest_by_token[key][1]:
+                latest_by_token[key] = (event, block_number)
 
-        return [event for event, _ in latest_by_pair.values()]
+        return [event for event, _ in latest_by_token.values()]
