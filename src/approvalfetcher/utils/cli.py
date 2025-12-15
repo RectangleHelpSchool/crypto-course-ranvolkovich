@@ -3,9 +3,7 @@ from typing import Optional
 
 from approvalfetcher.utils.valdation.eth_validtor import eth_address
 
-
 def parse_args(args: Optional[list[str]] = None) -> argparse.Namespace:
-    """Parse command-line arguments for the approval fetcher."""
     parser = argparse.ArgumentParser(
         prog="approval-fetcher",
         description="Fetch ERC-20 token approval events for an Ethereum address using eth_getLogs",
@@ -17,20 +15,6 @@ def parse_args(args: Optional[list[str]] = None) -> argparse.Namespace:
         type=eth_address,
         required=True,
         help="Ethereum address to scan for approval events (owner)"
-    )
-
-    parser.add_argument(
-        "--infura-key",
-        type=str,
-        help="Infura API key (overrides .env) - Get free key at https://infura.io/"
-    )
-
-    parser.add_argument(
-        "--log-level",
-        type=str,
-        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-        default="INFO",
-        help="Logging level (default: INFO)"
     )
 
     return parser.parse_args(args)

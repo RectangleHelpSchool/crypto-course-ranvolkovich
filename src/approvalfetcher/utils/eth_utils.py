@@ -1,5 +1,3 @@
-"""Ethereum utility functions."""
-
 
 def pad_address(address: str) -> str:
     """

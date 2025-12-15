@@ -1,27 +1,15 @@
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 
 
 class Settings(BaseSettings):
-    """Application configuration from environment variables."""
-
-    # API Key (required)
-    infura_api_key: str = ""
-
-    # Endpoint
+    infura_api_key: str = Field(..., min_length=1)
     infura_endpoint: str = "https://mainnet.infura.io/v3/"
 
-    # Block Scanning Configuration
     blocks_per_chunk: int = 10000
     max_concurrent_chunks: int = 5
 
-    # Retry Configuration
-    max_retry_attempts: int = 5
-    retry_min_wait: int = 1
-    retry_max_wait: int = 60
-    retry_multiplier: int = 2
-
-    # Logging
     log_level: str = "INFO"
 
     model_config = SettingsConfigDict(
@@ -30,8 +18,18 @@ class Settings(BaseSettings):
         case_sensitive=False,
     )
 
+    @field_validator('infura_api_key')
+    @classmethod
+    def validate_infura_key(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError(
+                "Infura API key is required. "
+                "Please set INFURA_API_KEY in your .env file. "
+                "Get a free API key at: https://infura.io/"
+            )
+        return v.strip()
+
 
 @lru_cache
 def get_settings() -> Settings:
-    """Cached settings singleton."""
     return Settings()

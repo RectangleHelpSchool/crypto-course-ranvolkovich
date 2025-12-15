@@ -1,2 +1,0 @@
-[console_scripts]
-approval-fetcher = approvalfetcher.main:main

@@ -3,7 +3,6 @@ import sys
 
 
 def setup_logging(log_level: str = "INFO") -> None:
-    """Configure logging for the application."""
     numeric_level = getattr(logging, log_level.upper(), logging.INFO)
 
     logging.basicConfig(

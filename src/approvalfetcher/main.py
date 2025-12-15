@@ -1,19 +1,42 @@
 import asyncio
 import sys
+from pydantic import ValidationError
 from approvalfetcher.utils.cli import parse_args
+from approvalfetcher.utils.logging_config import setup_logging
+from approvalfetcher.utils.config import get_settings
+from approvalfetcher.utils.formatters import format_approval_text
+from approvalfetcher.clients.web3_client import Web3Client
 from approvalfetcher.app import ApprovalFetcherApp
+from approvalfetcher.model.approval import ApprovalEventCollection
 
+
+async def run_approval_fetcher(address: str, client: Web3Client) -> ApprovalEventCollection:
+    app = ApprovalFetcherApp(client)
+    return await app.run(address)
+
+
+async def run_cli(address: str) -> str:
+    async with Web3Client() as client:
+        collection = await run_approval_fetcher(address, client)
+        return format_approval_text(collection)
 
 def main() -> None:
-
     args = parse_args()
-    app = ApprovalFetcherApp(
-        infura_api_key=args.infura_key,
-        log_level=args.log_level
-    )
 
     try:
-        result = asyncio.run(app.run(args.address))
+        settings = get_settings()
+    except ValidationError as e:
+        for error in e.errors():
+            if error['loc'][0] == 'infura_api_key':
+                print(f"Error: {error['msg']}", file=sys.stderr)
+                sys.exit(1)
+        print(f"Configuration error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    setup_logging(settings.log_level)
+
+    try:
+        result = asyncio.run(run_cli(args.address))
         print(result)
         sys.exit(0)
 
