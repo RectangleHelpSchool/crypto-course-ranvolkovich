@@ -54,10 +54,10 @@ class ApprovalService:
     async def _parse_log_to_event(self, log: dict, owner_address: str) -> ApprovalEvent:
         topics = log['topics']
 
-        spender_topic = topics[2] if isinstance(topics[2], str) else topics[2].hex()
+        spender_topic = topics[2].hex()
         spender = "0x" + spender_topic[-40:]
 
-        data = log['data'] if isinstance(log['data'], str) else log['data'].hex()
+        data = log['data'].hex()
         token_address = log['address']
 
         token_symbol, token_name = await asyncio.gather(
