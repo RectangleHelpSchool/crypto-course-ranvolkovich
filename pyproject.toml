@@ -21,7 +21,7 @@ dev = [
     "pytest-mock>=3.14.0",
 ]
 
-g[tool.ruff]
+[tool.ruff]
 # directories or packages to lint
 src = ["src"]
 
@@ -32,7 +32,7 @@ files = ["src"]
 # Python version target
 python_version = "3.11"
 
-# strict mode
+# strict model
 strict = true
 
 # optional: ignore missing imports for third-party packages
