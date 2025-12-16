@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, Any
 
 
 class ApprovalEvent(BaseModel):
@@ -13,7 +13,7 @@ class ApprovalEvent(BaseModel):
 
     @field_validator('token_address', 'owner', 'spender')
     @classmethod
-    def validate_hex_string(cls, v):
+    def validate_hex_string(cls, v: str) -> Any:
         if isinstance(v, str):
             return v.lower()
         return v
@@ -28,7 +28,7 @@ class ApprovalEventCollection(BaseModel):
 
     @field_validator('address')
     @classmethod
-    def validate_address(cls, v):
+    def validate_address(cls, v: str) -> Any:
         if isinstance(v, str):
             return v.lower()
         return v

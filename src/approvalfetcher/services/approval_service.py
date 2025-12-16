@@ -1,6 +1,6 @@
 import asyncio
-import datetime
 import logging
+from web3.types import LogReceipt
 
 from ..clients.web3_client import Web3Client
 from approvalfetcher.model.approval import ApprovalEvent, ApprovalEventCollection
@@ -26,15 +26,17 @@ class ApprovalService:
         tasks = [self._parse_log_to_event(log, owner_address) for log in logs]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        events_with_block = []
+        events_with_block: list[tuple[ApprovalEvent, int]] = []
         for i, result in enumerate(results):
             if isinstance(result, Exception):
-                logger.warning(f"Failed to parse log {logs[i].get('transactionHash')}: {result}")
+                tx_hash = logs[i].get('transactionHash')
+                tx_hash_str = tx_hash.hex() if isinstance(tx_hash, bytes) else str(tx_hash)
+                logger.warning(f"Failed to parse log {tx_hash_str}: {result}")
             else:
+                assert isinstance(result, ApprovalEvent)
                 block_number = logs[i]['blockNumber']
-                if isinstance(block_number, str):
-                    block_number = int(block_number, 16)
-                events_with_block.append((result, block_number))
+                block_num_int = int(block_number) if isinstance(block_number, int) else block_number
+                events_with_block.append((result, block_num_int))
 
         logger.info(f"Successfully parsed {len(events_with_block)} approval events")
 
@@ -51,7 +53,7 @@ class ApprovalService:
             fetched_at=datetime.now(timezone.utc)
         )
 
-    async def _parse_log_to_event(self, log: dict, owner_address: str) -> ApprovalEvent:
+    async def _parse_log_to_event(self, log: LogReceipt, owner_address: str) -> ApprovalEvent:
         topics = log['topics']
 
         spender_topic = topics[2].hex()
@@ -65,7 +67,6 @@ class ApprovalService:
             self.client.get_token_name(token_address)
         )
 
-        # Normalize approval amount (convert huge numbers to INFINITY)
         value = normalize_approval_amount(data)
 
         return ApprovalEvent(
@@ -79,7 +80,7 @@ class ApprovalService:
 
     @staticmethod
     def _filter_latest_approvals(events_with_block: list[tuple[ApprovalEvent, int]]) -> list[ApprovalEvent]:
-        latest_by_token = {}
+        latest_by_token: dict[str, tuple[ApprovalEvent, int]] = {}
 
         for event, block_number in events_with_block:
             key = event.token_address.lower()

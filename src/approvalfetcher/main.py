@@ -12,7 +12,7 @@ from approvalfetcher.model.approval import ApprovalEventCollection
 
 async def run_approval_fetcher(address: str, client: Web3Client) -> ApprovalEventCollection:
     app = ApprovalFetcherApp(client)
-    return await app.run(address)
+    return await app.get_approvals(address)
 
 
 async def run_cli(address: str) -> str:

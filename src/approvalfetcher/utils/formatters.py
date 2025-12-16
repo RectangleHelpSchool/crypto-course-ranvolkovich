@@ -13,13 +13,14 @@ def normalize_approval_amount(data: str) -> str:
     return data
 
 
-def format_approval_text(collection: ApprovalEventCollection) -> str:
-    if collection.total_events == 0:
+def format_approval_text(approval_events: ApprovalEventCollection) -> str:
+    if approval_events.total_events == 0:
         return "No approval events found."
     lines = []
-    for event in collection.events:
+    for event in approval_events.events:
         token_display = event.token_symbol or event.token_name or "UnknownERC20"
         # Check if value is INFINITY before converting
+        amount: str | int
         if event.value == "INFINITY":
             amount = "INFINITY"
         else:

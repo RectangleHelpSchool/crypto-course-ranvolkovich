@@ -11,14 +11,14 @@ class ApprovalFetcherApp:
     def __init__(self, client: Web3Client):
         self.client = client
 
-    async def run(self, address: str) -> ApprovalEventCollection:
+    async def get_approvals(self, address: str) -> ApprovalEventCollection:
         logger.info(f"Starting approval event fetch for address: {address}")
 
         try:
             service = ApprovalService(self.client)
-            collection = await service.fetch_all_approvals(address)
-            logger.info(f"✓ Successfully fetched {collection.total_events} approval events")
-            return collection
+            approval_logs  = await service.fetch_all_approvals(address)
+            logger.info(f"✓ Successfully fetched {approval_logs.total_events} approval events")
+            return approval_logs
 
         except ConnectionError:
             logger.exception("Connection error")
