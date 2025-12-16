@@ -1,4 +1,4 @@
-from approvalfetcher.model.approval import ApprovalEvent, ApprovalEventCollection
+from approvalfetcher.model.approval import ApprovalEvent, ApprovalEvents
 
 
 def test_approval_event_creation():
@@ -43,7 +43,7 @@ def test_approval_event_collection():
         value="0x1"
     )
 
-    collection = ApprovalEventCollection(
+    collection = ApprovalEvents(
         address="0x123",
         total_events=2,
         scanned_blocks=1000,

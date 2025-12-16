@@ -3,7 +3,7 @@ import logging
 from web3.types import LogReceipt
 
 from ..clients.web3_client import Web3Client
-from approvalfetcher.model.approval import ApprovalEvent, ApprovalEventCollection
+from approvalfetcher.model.approval import ApprovalEvent, ApprovalEvents
 from ..utils.config import get_settings
 from ..utils.formatters import normalize_approval_amount
 from datetime import datetime, timezone
@@ -17,7 +17,7 @@ class ApprovalService:
         self.client = client
         self.settings = get_settings()
 
-    async def fetch_all_approvals(self, owner_address: str) -> ApprovalEventCollection:
+    async def fetch_all_approvals(self, owner_address: str) -> ApprovalEvents:
         logger.info(f"Starting approval event scan for address: {owner_address}")
 
         logs = await self.client.get_all_approval_logs(owner_address)
@@ -45,7 +45,7 @@ class ApprovalService:
 
         latest_block = await self.client.get_latest_block()
 
-        return ApprovalEventCollection(
+        return ApprovalEvents(
             address=owner_address.lower(),
             total_events=len(latest_approvals),
             scanned_blocks=latest_block + 1,

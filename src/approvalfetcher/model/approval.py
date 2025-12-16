@@ -19,7 +19,7 @@ class ApprovalEvent(BaseModel):
         return v
 
 
-class ApprovalEventCollection(BaseModel):
+class ApprovalEvents(BaseModel):
     address: str = Field(..., description="Ethereum address that was scanned")
     total_events: int = Field(..., description="Total number of approval events found")
     scanned_blocks: int = Field(..., description="Total number of blocks scanned")

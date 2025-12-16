@@ -1,7 +1,7 @@
 import logging
 from .clients.web3_client import Web3Client
 from .services.approval_service import ApprovalService
-from approvalfetcher.model.approval import ApprovalEventCollection
+from approvalfetcher.model.approval import ApprovalEvents
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +11,7 @@ class ApprovalFetcherApp:
     def __init__(self, client: Web3Client):
         self.client = client
 
-    async def get_approvals(self, address: str) -> ApprovalEventCollection:
+    async def get_approvals(self, address: str) -> ApprovalEvents:
         logger.info(f"Starting approval event fetch for address: {address}")
 
         try:

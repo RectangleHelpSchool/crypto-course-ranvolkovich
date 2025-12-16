@@ -7,10 +7,10 @@ from approvalfetcher.utils.config import get_settings
 from approvalfetcher.utils.formatters import format_approval_text
 from approvalfetcher.clients.web3_client import Web3Client
 from approvalfetcher.app import ApprovalFetcherApp
-from approvalfetcher.model.approval import ApprovalEventCollection
+from approvalfetcher.model.approval import ApprovalEvents
 
 
-async def run_approval_fetcher(address: str, client: Web3Client) -> ApprovalEventCollection:
+async def run_approval_fetcher(address: str, client: Web3Client) -> ApprovalEvents:
     app = ApprovalFetcherApp(client)
     return await app.get_approvals(address)
 
