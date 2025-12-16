@@ -1,6 +1,8 @@
 import asyncio
 import sys
 from pydantic import ValidationError
+
+from approvalfetcher.services.approval_service import ApprovalService
 from approvalfetcher.utils.cli import parse_args
 from approvalfetcher.utils.logging_config import setup_logging
 from approvalfetcher.utils.config import get_settings
@@ -10,29 +12,20 @@ from approvalfetcher.app import ApprovalFetcherApp
 from approvalfetcher.model.approval import ApprovalEvents
 
 
-async def run_approval_fetcher(address: str, client: Web3Client) -> ApprovalEvents:
-    app = ApprovalFetcherApp(client)
-    return await app.get_approvals(address)
+async def run_approval_fetcher(address: str, approval_fetcher_app: ApprovalFetcherApp) -> ApprovalEvents:
+    return await approval_fetcher_app.get_approvals(address)
 
 
 async def run_cli(address: str) -> str:
     async with Web3Client() as client:
-        collection = await run_approval_fetcher(address, client)
-        return format_approval_text(collection)
+        approval_service = ApprovalService(client)
+        approval_fetcher_app = ApprovalFetcherApp(approval_service)
+        approval_events = await run_approval_fetcher(address, approval_fetcher_app)
+        return format_approval_text(approval_events)
 
 def main() -> None:
     args = parse_args()
-
-    try:
-        settings = get_settings()
-    except ValidationError as e:
-        for error in e.errors():
-            if error['loc'][0] == 'infura_api_key':
-                print(f"Error: {error['msg']}", file=sys.stderr)
-                sys.exit(1)
-        print(f"Configuration error: {e}", file=sys.stderr)
-        sys.exit(1)
-
+    settings = get_settings()
     setup_logging(settings.log_level)
 
     try:

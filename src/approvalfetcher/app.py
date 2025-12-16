@@ -8,15 +8,14 @@ logger = logging.getLogger(__name__)
 
 class ApprovalFetcherApp:
 
-    def __init__(self, client: Web3Client):
-        self.client = client
+    def __init__(self, approval_service: ApprovalService):
+        self.approval_service = approval_service
 
     async def get_approvals(self, address: str) -> ApprovalEvents:
         logger.info(f"Starting approval event fetch for address: {address}")
 
         try:
-            service = ApprovalService(self.client)
-            approval_logs  = await service.fetch_all_approvals(address)
+            approval_logs  = await self.approval_service.fetch_all_approvals(address)
             logger.info(f"✓ Successfully fetched {approval_logs.total_events} approval events")
             return approval_logs
 
