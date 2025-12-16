@@ -1,5 +1,4 @@
 import logging
-from .clients.web3_client import Web3Client
 from .services.approval_service import ApprovalService
 from approvalfetcher.model.approval import ApprovalEvents
 

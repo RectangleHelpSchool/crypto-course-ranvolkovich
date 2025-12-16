@@ -1,6 +1,5 @@
 import asyncio
 import sys
-from pydantic import ValidationError
 
 from approvalfetcher.services.approval_service import ApprovalService
 from approvalfetcher.utils.cli import parse_args
