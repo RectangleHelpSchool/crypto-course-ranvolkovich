@@ -69,7 +69,9 @@ def test_filter_latest_approvals_different_spenders():
 
     filtered = ApprovalService._filter_latest_approvals(events_with_block)
 
-    assert len(filtered) == 2
+    assert len(filtered) == 1
+    assert filtered[0].spender == "0xspender2"
+    assert filtered[0].value == "0xc8"
 
 
 def test_filter_latest_approvals_case_insensitive():
