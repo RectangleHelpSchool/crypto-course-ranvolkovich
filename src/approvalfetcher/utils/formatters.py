@@ -12,7 +12,7 @@ def normalize_approval_amount(data: str) -> str:
     return str(int_value)
 
 
-def _parse_amount(log_data: HexBytes) -> str:
+def parse_amount(log_data: HexBytes) -> str:
     amount = int(log_data.hex(), 16)
     if amount > THRESHOLD:
         return "INFINITY"
@@ -20,11 +20,11 @@ def _parse_amount(log_data: HexBytes) -> str:
 
 
 def format_approval_text(approval_events: ApprovalEvents) -> str:
-    if approval_events.total_events == 0:
+    if len(approval_events.events) == 0:
         return "No approval events found."
     lines = []
     for event in approval_events.events:
-        token_display = event.token_symbol or event.token_name or "UnknownERC20"
-        amount: str = _parse_amount(HexBytes(event.value))
+        token_display = event.token_symbol or "UnknownERC20"
+        amount: str = parse_amount(HexBytes(event.value))
         lines.append(f"approval on {token_display} to {event.spender} on amount of {amount}")
     return "\n".join(lines)
