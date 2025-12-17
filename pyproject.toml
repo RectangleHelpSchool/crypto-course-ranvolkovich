@@ -59,5 +59,7 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 [dependency-groups]
 dev = [
-    "uvicorn (>=0.38.0,<0.39.0)"
+    "mypy>=1.19.1",
+    "ruff>=0.14.9",
+    "uvicorn (>=0.38.0,<0.39.0)",
 ]

@@ -1,12 +1,12 @@
 import asyncio
 import logging
+from datetime import datetime, timezone
 from web3.types import LogReceipt
 
 from ..clients.web3_client import Web3Client
 from approvalfetcher.model.approval import ApprovalEvent, ApprovalEvents
 from ..utils.config import get_settings
 from ..utils.formatters import normalize_approval_amount
-from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -62,18 +62,13 @@ class ApprovalService:
         data = log['data'].hex()
         token_address = log['address']
 
-        token_symbol, token_name = await asyncio.gather(
-            self.client.get_token_symbol(token_address),
-            self.client.get_token_name(token_address)
-        )
+        token_symbol = await self.client.get_token_symbol(token_address)
 
         value = normalize_approval_amount(data)
 
         return ApprovalEvent(
             token_address=token_address,
-            token_name=token_name,
             token_symbol=token_symbol,
-            owner=owner_address.lower(),
             spender=spender.lower(),
             value=value
         )
