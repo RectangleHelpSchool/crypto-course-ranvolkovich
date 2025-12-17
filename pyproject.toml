@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "approval-fetcher"
+version = "0.1.0"
+description = "ERC-20 Token Approval Event Fetcher"
+requires-python = ">=3.11"
+dependencies = [
+    "web3[async]>=7.6.0",
+    "aiohttp>=3.10.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-mock>=3.14.0",
+]
+
+[tool.ruff]
+# directories or packages to lint
+src = ["src"]
+
+[tool.mypy]
+# directories to type check
+files = ["src"]
+
+# Python version target
+python_version = "3.11"
+
+# strict model
+strict = true
+
+# optional: ignore missing imports for third-party packages
+ignore_missing_imports = true
+
+# optional: disallow untyped function definitions
+disallow_untyped_defs = true
+
+[project.scripts]
+approval-fetcher = "approvalfetcher.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

@@ -1,0 +1,6 @@
+.claude
+.venv
+.env
+.idea
+__pycache__/
+approval_fetcher.egg-info/
