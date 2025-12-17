@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from approvalfetcher.model.approval import EthAddress, ApprovalEvents
+from approvalfetcher.model.approval import EvmAddress, ApprovalEvents
 from approvalfetcher.dto.approval.approval_response import ApprovalsResponse, to_response
 from approvalfetcher.services.approval_service import ApprovalService
 from approvalfetcher.services.dependencies import get_approval_service
@@ -17,7 +17,7 @@ throttler = Throttling(max_tasks=settings.max_concurrent_tasks)
 
 @router.post("/get_approvals")
 async def get_approvals(
-        addresses: list[EthAddress],
+        addresses: list[EvmAddress],
         approval_service: Annotated[ApprovalService, Depends(get_approval_service)]
 ) -> ApprovalsResponse:
     approval_events_list = await throttler.submit(addresses, approval_service.fetch_all_approvals)

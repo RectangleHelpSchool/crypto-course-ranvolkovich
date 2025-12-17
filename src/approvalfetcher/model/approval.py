@@ -4,16 +4,16 @@ from typing import Optional
 
 from typing import Annotated
 from approvalfetcher.utils.valdation.eth_validtor import eth_address
-EthAddress = Annotated[str, AfterValidator(eth_address)]
+EvmAddress = Annotated[str, AfterValidator(eth_address)]
 
 class ApprovalEvent(BaseModel):
-    token_address: EthAddress
+    token_address: EvmAddress
     token_symbol: Optional[str] = Field(None, description="Token symbol (optional)")
-    spender: EthAddress
+    spender: EvmAddress
     value: str = Field(..., description="Approved amount in wei (as string to preserve precision)")
 
 class ApprovalEvents(BaseModel):
-    address: EthAddress
+    address: EvmAddress
     total_events: int = Field(..., description="Total number of approval events found")
     scanned_blocks: int = Field(..., description="Total number of blocks scanned")
     events: list[ApprovalEvent] = Field(default_factory=list, description="List of approval events")
