@@ -1,3 +1,4 @@
+import http
 import logging
 from typing import Any, Optional
 import aiohttp
@@ -31,10 +32,10 @@ class RestClient:
 
         try:
             async with self.session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=timeout)) as response:
-                if response.status == 404:
+                if response.status == http.HTTPStatus.NOT_FOUND:
                     return None
 
-                if response.status != 200:
+                if response.status != http.HTTPStatus.OK:
                     logger.warning(f"API error: {response.status} for {url}")
                     return None
 

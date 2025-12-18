@@ -3,7 +3,7 @@ import asyncio
 from typing import Optional
 from .rest_client import RestClient
 from ..utils.config import get_settings
-from ..utils.constants import COINGECKO_TOKEN_BY_CONTRACT_PATH
+from ..utils.constants import COINGECKO_TOKEN_BY_CONTRACT_PATH, TOKEN_PRICE_CURRENCY
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class CoinGeckoClient(RestClient):
         await super().__aenter__()
         return self
 
-    async def get_token_price_by_address(self, contract_address: str) -> Optional[float]:
+    async def _get_token_price_by_address(self, contract_address: str) -> Optional[float]:
         headers = {}
         if self.api_key:
             headers["x-cg-demo-api-key"] = self.api_key
@@ -33,12 +33,12 @@ class CoinGeckoClient(RestClient):
         if not data:
             return None
 
-        price = data.get("market_data", {}).get("current_price", {}).get("usd")
+        price = data.get("market_data", {}).get("current_price", {}).get(TOKEN_PRICE_CURRENCY)
         return price
 
     async def get_multiple_prices(self, contract_addresses: list[str]) -> dict[str, Optional[float]]:
         tasks = [
-            self.get_token_price_by_address(address)
+            self._get_token_price_by_address(address)
             for address in contract_addresses
         ]
 

@@ -1,23 +1,32 @@
-import uvicorn
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, AsyncExitStack
 from typing import AsyncGenerator
+
+import uvicorn
 from fastapi import FastAPI
 
+from approvalfetcher.clients.coingecko_client import CoinGeckoClient
+from approvalfetcher.clients.web3_client import Web3Client
 from approvalfetcher.routes.approval import router as approval_router
 from approvalfetcher.routes.system import router as system_router
-from approvalfetcher.clients.web3_client import Web3Client
-from approvalfetcher.clients.coingecko_client import CoinGeckoClient
 from approvalfetcher.services.approval_service import ApprovalService
+from approvalfetcher.services.price_service import PriceService
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    async with Web3Client() as web3_client, CoinGeckoClient() as coingecko_client:
+    async with AsyncExitStack() as stack:
+        web3_client = await stack.enter_async_context(Web3Client())
+        coingecko_client = await stack.enter_async_context(CoinGeckoClient())
+
         app.state.web3_client = web3_client
         app.state.coingecko_client = coingecko_client
         app.state.approval_service = ApprovalService(web3_client)
-        print("✓ Initialized Web3Client, CoinGeckoClient, and ApprovalService")
+        app.state.price_service = PriceService(coingecko_client)
+
+        print("✓ Initialized Web3Client, CoinGeckoClient, ApprovalService, and PriceService")
         yield
         print("✓ Cleaned up clients")
+
 
 app = FastAPI(title="ERC20 Approvals API", version="0.1.0", lifespan=lifespan)
 
