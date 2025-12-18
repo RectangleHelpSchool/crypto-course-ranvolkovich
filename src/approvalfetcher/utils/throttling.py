@@ -11,7 +11,7 @@ class Throttling:
 
     async def submit(
         self,
-        items: List[TIn],
+        items: set[TIn],
         func: Callable[[TIn], Awaitable[TOut]]
     ) -> List[TOut]:
         async def worker(item: TIn) -> TOut:

@@ -12,10 +12,10 @@ class Settings(BaseSettings):
     infura_api_key: str = Field(default="", min_length=1)
     infura_endpoint: str = "https://mainnet.infura.io/v3/"
 
-    blocks_per_chunk: int = 10000
-    max_concurrent_chunks: int = 5
+    coingecko_base_url: str = "https://api.coingecko.com/api/v3"
+    coingecko_api_key: str = Field(default="")
+
     max_concurrent_tasks: int = Field(default=2, description="Maximum concurrent API tasks")
-    request_timeout_seconds: int = Field(default=30, description="Request timeout in seconds")
 
     log_level: str = "INFO"
 
