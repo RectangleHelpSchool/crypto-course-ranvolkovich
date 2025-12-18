@@ -17,7 +17,7 @@ throttler = Throttling(max_tasks=settings.max_concurrent_tasks)
 
 @router.post("/get_approvals")
 async def get_approvals(
-        addresses: list[EvmAddress],
+        addresses: set[EvmAddress],
         approval_service: Annotated[ApprovalService, Depends(get_approval_service)],
         price_service: Annotated[PriceService, Depends(get_price_service)],
         get_token_price: bool = True
